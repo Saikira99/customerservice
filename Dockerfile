@@ -1,14 +1,18 @@
 # -----------------------------------------
 # Stage 1: Build the application with Maven
 # -----------------------------------------
-FROM maven:3.9.4-eclipse-temurin-21 AS build
+FROM openjdk:21-jdk-slim AS build
+
+# Install Maven
+RUN apt-get update && apt-get install -y maven
+
 WORKDIR /app
 
-# Copy only the pom.xml first (to cache dependencies)
+# Copy only the pom.xml first to cache dependencies
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Now copy the entire source code
+# Now copy the source code
 COPY src ./src
 
 # Build the application (skip tests if desired)
@@ -17,7 +21,7 @@ RUN mvn clean package -DskipTests
 # -----------------------------------------
 # Stage 2: Create a lightweight runtime image
 # -----------------------------------------
-FROM eclipse-temurin:21-jdk-slim
+FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Copy the JAR file from the build stage
