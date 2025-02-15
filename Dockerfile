@@ -1,7 +1,7 @@
 # -----------------------------------------
 # Stage 1: Build the application with Maven
 # -----------------------------------------
-FROM maven:3.9.1-eclipse-temurin-21 AS build
+FROM maven:3.9.4-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copy only the pom.xml first (to cache dependencies)
@@ -17,7 +17,7 @@ RUN mvn clean package -DskipTests
 # -----------------------------------------
 # Stage 2: Create a lightweight runtime image
 # -----------------------------------------
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk-slim
 WORKDIR /app
 
 # Copy the JAR file from the build stage
