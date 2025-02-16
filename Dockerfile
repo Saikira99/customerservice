@@ -1,14 +1,19 @@
-# Use OpenJDK 21 for runtime
-FROM openjdk:21-jdk-slim
-
-# Set the working directory inside the container
+# -----------------------------------------
+# Stage 1: Build the application with Maven
+# -----------------------------------------
+FROM openjdk:21-jdk-slim AS build
+RUN apt-get update && apt-get install -y maven
 WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copy the built JAR file into the container
-COPY target/customerservice-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose the application port (informational; the actual port is set by the environment)
+# -----------------------------------------
+# Stage 2: Create the runtime image
+# -----------------------------------------
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/customerservice-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8081
-
-# Run the application (environment variables will be injected by Render or Docker Compose)
 ENTRYPOINT ["java", "-jar", "app.jar"]
