@@ -40,12 +40,14 @@ services:
     container_name: customer-service
     restart: always
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/customer_service
-      DB_USER: postgres
-      DB_PASSWORD: 12345
-      KAFKA_SERVER: kafka:9092
-      MAIL_USER: temperory789@gmail.com
-      MAIL_PASS: ufwwsufczxhmkqsi
+      # Note: Use the service name "postgres" in the URL for Docker networking.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/customer_service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345
+      # For Kafka, we point to the kafka container.
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_MAIL_USERNAME: temperory789@gmail.com
+      SPRING_MAIL_PASSWORD: ufwwsufczxhmkqsi
     ports:
       - "8081:8081"
     depends_on:
